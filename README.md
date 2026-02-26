@@ -13,7 +13,7 @@ This tool automates the deployment or execution of configurations during logon o
 
 Watch the video on Youtube
 
-[![Watch the video on Youtube](https://i.ytimg.com/vi/BE4vtI_WJGE/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLC1hCvaNLwTVhb9RM0J46CS5sLsYw)](https://www.youtube.com/watch?v=HaOsP7huuDw)
+[![Watch the video on Youtube](https://i9.ytimg.com/vi/HaOsP7huuDw/mqdefault.jpg?v=68232e2a&sqp=CMDMgs0G&rs=AOn4CLCpD4WIjZRtJRM7bJ7PXmu0ZPFGdw)](https://www.youtube.com/watch?v=HaOsP7huuDw)
 
 
 &nbsp;
