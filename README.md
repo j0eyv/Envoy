@@ -96,7 +96,7 @@ Watch the video on Youtube
 	 - Added support for the IconPath setting in Desktop Shortcuts and Start-Menu Shortcuts features  
 	 - Added support for Arguments in Desktop Shortcuts and Start-Menu Shortcuts features  
 	 - Added support for StartIn path in Desktop and Start-Menu shortcuts
-  - Fixed an issue where File Actions could be triggered even when a user was not part of a group
+   - Fixed an issue where File Actions could be triggered even when a user was not part of a group
   
 - 1.3.002: This release addresses issues with Microsoft.Graph.Authentication found in versions 2.34.0 and 2.35.0
     - Authentication method has been modified to utilize 'Set-MgGraphOption -DisableLoginByWAM $true' if available
@@ -107,6 +107,9 @@ Watch the video on Youtube
 
 - 1.3.004: Bug fix
   - Small bug fix to prevent authentication pop-ups in non-managed user contexts.
+
+ - 1.3.005: Bug fix
+  - Fixed an issue where File Actions could be triggered even when a user was not part of a group
   
 &nbsp;
 
