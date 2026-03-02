@@ -113,11 +113,16 @@ Watch the promo video on YouTube
 
  - 1.3.005: Bug fix
   - Fixed an issue where File Actions could be triggered even when a user was not part of a group
+
+ - 1.3.006: Bug fix
+  - Fixed an issue where desktop and start-menu shortcuts did not include the configured Icon file.
   
 &nbsp;
 
 # 🛑 Known issues
 - Microsoft Graph PowerShell modules (version 2.34 and 2.35) may cause Graph connection issues, resulting in the following error: _WARNING: Note: Sign in by Web Account Manager (WAM) is enabled by default on Windows. If using an embedded terminal, the interactive browser window may be hidden behind other windows._ To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.35.1 is recommended, as this release includes the DisableLoginByWAM fix implemented in Envoy.
+
+- Config builder does not include Start-Menu Shortcuts and Desktop Shortcuts while importing a current Config.JSON File. This will be fixed soon!
 
 &nbsp;
 
@@ -712,6 +717,7 @@ Envoy is completely free to use! That said, building and improving it takes sign
 
 **Github Sponsors:** https://github.com/sponsors/j0eyv
 **Buy me a coffee**: https://buymeacoffee.com/j0eyv
+
 
 
 
