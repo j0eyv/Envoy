@@ -122,8 +122,6 @@ Watch the promo video on YouTube
 # 🛑 Known issues
 - Microsoft Graph PowerShell modules (version 2.34 and 2.35) may cause Graph connection issues, resulting in the following error: _WARNING: Note: Sign in by Web Account Manager (WAM) is enabled by default on Windows. If using an embedded terminal, the interactive browser window may be hidden behind other windows._ To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.35.1 is recommended, as this release includes the DisableLoginByWAM fix implemented in Envoy.
 
-- Config builder does not include Start-Menu Shortcuts and Desktop Shortcuts while importing a current Config.JSON File. This will be fixed soon!
-
 &nbsp;
 
 # 💥 Functions
@@ -717,6 +715,7 @@ Envoy is completely free to use! That said, building and improving it takes sign
 
 **Github Sponsors:** https://github.com/sponsors/j0eyv
 **Buy me a coffee**: https://buymeacoffee.com/j0eyv
+
 
 
 
