@@ -13,11 +13,11 @@ This tool automates the deployment or execution of configurations during logon o
 
 Watch the video on Youtube
 
-[![Watch the video on Youtube](https://i9.ytimg.com/vi/HaOsP7huuDw/mqdefault.jpg?v=68232e2a&sqp=CMDMgs0G&rs=AOn4CLCpD4WIjZRtJRM7bJ7PXmu0ZPFGdw)](https://www.youtube.com/watch?v=HaOsP7huuDw)
+[![Demo](./Images/envoydemo.png)](https://www.youtube.com/watch?v=HaOsP7huuDw)
 
 Watch the promo video on YouTube
 
-[![Watch the promo video on Youtube](https://i9.ytimg.com/vi_webp/pWEkDXyE4g4/mq1.webp?sqp=CMDMgs0G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGBMgPyh_MA8=&rs=AOn4CLAoWW6pHQXHmb5FWr0NUbaK5dRwmw)](https://www.youtube.com/watch?v=pWEkDXyE4g4)
+[![Promo](./Images/envoypromo.png)](https://www.youtube.com/watch?v=pWEkDXyE4g4)
 
 &nbsp;
 
@@ -715,6 +715,7 @@ Envoy is completely free to use! That said, building and improving it takes sign
 
 **Github Sponsors:** https://github.com/sponsors/j0eyv
 **Buy me a coffee**: https://buymeacoffee.com/j0eyv
+
 
 
 
