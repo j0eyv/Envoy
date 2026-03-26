@@ -116,6 +116,11 @@ Watch the promo video on YouTube
 
  - 1.3.006: Bug fix
   - Fixed an issue where desktop and start-menu shortcuts did not include the configured Icon file.
+
+ - 1.3.007: New features! (Release early April)
+  - Start-Menu Shortcuts now support IconIndex values
+  - Desktop Shortcuts now support IconIndex values
+  - All configurations now support group nesting! When **"IncludeNested": "true"** is set, every underlying membership will be included.
   
 &nbsp;
 
@@ -188,7 +193,8 @@ Watch the promo video on YouTube
         "Group": "GG - Share 1",
         "Description": "Test Drive",
         "Priority": 1,
-        "Action": "add"
+        "Action": "add",
+        "IncludeNested": "true"
       },
       {
         "DriveLetter": "Y",
@@ -196,7 +202,8 @@ Watch the promo video on YouTube
         "Group": "GG - Share 2",
         "Description": "Test Drive 2",
         "Priority": 1,
-        "Action": "add"
+        "Action": "add",
+        "IncludeNested": "true"
       },
       {
         "DriveLetter": "H",
@@ -204,7 +211,8 @@ Watch the promo video on YouTube
         "Group": "",
         "Description": "Home",
         "Priority": 1,
-        "Action": "add"
+        "Action": "add",
+        "IncludeNested": ""
       },
       {
         "DriveLetter": "Z",
@@ -212,7 +220,8 @@ Watch the promo video on YouTube
         "Group": "",
         "Description": "Home",
         "Priority": 1,
-        "Action": "add"
+        "Action": "add",
+        "IncludeNested": ""
       }
     ],
 ```
@@ -226,6 +235,7 @@ Watch the promo video on YouTube
 | Description | Text | Fill in a description. E.g. Sales Drive, Marketing Team. This is being used as friendlyname |
 | Priority | 1,2,3,4,5,6, etc | Conflicts with drive mappings can occur if a user is a member of multiple groups with the same drive letter as result. |Prio 1 is the lowest, higher wins. |
 | Action | Add or Remove | Define the action for the drive mapping |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
 
 &nbsp;
 
@@ -251,7 +261,8 @@ Watch the promo video on YouTube
         "ValueType": "DWORD",
         "ValueData": 1,
         "Group": "GG - Registry - TestKey",
-        "Action": "add"
+        "Action": "add",
+        "IncludeNested": ""
       },
       {
         "Key": "HKCU:\\Software\\TestKey",
@@ -289,6 +300,7 @@ Watch the promo video on YouTube
 | ValueData | Data | Define the desired data. Decimal, text, path's, etc. |
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will receive this registry setting. Leave the group empty for "everyone". |
 | Action | Add or Remove | Define the action for the registry key |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
 
 &nbsp;
 
@@ -309,7 +321,8 @@ Watch the promo video on YouTube
       {
         "FilePath": "C:\\ProgramFiles\\CustomApp\\Setup.msi",
         "Arguments": "/qn",
-        "Group": "GG - Custom App"
+        "Group": "GG - Custom App",
+        "IncludeNested": ""
       },
       {
         "FilePath": "C:\\Windows\\System32\\calc.exe",
@@ -327,6 +340,7 @@ Watch the promo video on YouTube
 | FilePath | C:\\Folder\\File.exe | Configure the file path |
 | Arguments | /qn, /silent, etc | Supports arguments belonging to the application |
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will automatically launch the configured application. Leave the group empty for "everyone". |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
 
 &nbsp;
 
@@ -354,35 +368,40 @@ Watch the promo video on YouTube
         "SourcePath": "C:\\Temp\\Source\\File.txt",
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
-        "Group": "GG - FileAction - Copy"
+        "Group": "GG - FileAction - Copy",
+        "IncludeNested": "true"
       },
       {
         "FileActionType": "copy",
         "SourcePath": "%localappdata%\\File.txt",
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
-        "Group": "Envoy - FileAction - EID - Test"
+        "Group": "Envoy - FileAction - EID - Test",
+        "IncludeNested": "true"
       },  
       {
         "FileActionType": "rename",
         "SourcePath": "C:\\Temp\\Source\\File.txt",
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
-        "Group": "GG - FileAction - Rename"
+        "Group": "GG - FileAction - Rename",
+        "IncludeNested": "true"
       },
       {
         "FileActionType": "move",
         "SourcePath": "C:\\Temp\\Source\\File.txt",
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
-        "Group": "GG - FileAction - Move"
+        "Group": "GG - FileAction - Move",
+        "IncludeNested": ""
       },
       {
         "FileActionType": "delete",
         "SourcePath": "C:\\Temp\\Source\\File.txt",
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
-        "Group": "GG - FileAction - Delete"
+        "Group": "GG - FileAction - Delete",
+        "IncludeNested": ""
       }
     ],
 ```
@@ -395,6 +414,7 @@ Watch the promo video on YouTube
 | DestinationPath | C:\\Folder\\Destination\\File.ini | Being used for actions: copy, move |
 | NewName | FileName | Set the desired new file name. Being used for actions: rename |
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will automatically execute the file actions. Leave the group empty for "everyone". |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
 
 &nbsp;
 
@@ -416,7 +436,8 @@ Watch the promo video on YouTube
         "PrinterPath": "\\\\PRINTSRV.domain.local\\FollowMe",
         "Group": "GG - Printers - FollowMe",
         "Action": "add",
-        "DefaultPrinter": "True"
+        "DefaultPrinter": "True",
+        "IncludeNested": ""
       },
       {
         "PrinterPath": "\\\\PRINTSRV.domain.local\\PRT01",
@@ -432,6 +453,7 @@ Watch the promo video on YouTube
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will automatically add or remove the printer queue. Leave the group empty for "everyone". |
 | Action | Add or Remove | Define if the printer queue should be added or removed |
 | DefaultPrinter | True | Sets the specified printer queue as the default printer in Windows. If this value is empty or set to False, no action is taken. If multiple printer queues are marked as default in the configuration, the last one listed will be applied as the default printer. |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
 
 &nbsp;
 
@@ -458,7 +480,8 @@ Watch the promo video on YouTube
         "shortcutFolder": "Utilities",
         "action": "Add",
         "iconPath": "c:\\App1\\logo.ico",
-        "Group": ""
+        "Group": "",
+        "IncludeNested": ""        
       } 
     ] 
 ```
@@ -473,6 +496,7 @@ Watch the promo video on YouTube
 | StartIn | C:\\App\\ | Configure the working directory for the program when it launches. |
 | Executable | C:\\App\\Start.exe | Shortcut target |
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
 
 &nbsp;
 
@@ -497,7 +521,8 @@ Watch the promo video on YouTube
         "action": "remove",
         "iconPath": "c:\\application\\logo.ico",
         "StartIn": "c:\\application\\,
-        "Group": ""
+        "Group": "",
+        "IncludeNested": ""
       },
       {
         "shortcutName": "Remote Assistance",
@@ -506,7 +531,8 @@ Watch the promo video on YouTube
         "action": "add",
         "iconPath": "c:\\application\\logo.ico",
         "StartIn": "C:\\Windows\\System32\\,
-        "Group": ""
+        "Group": "",
+        "IncludeNested": ""
       }       
     ] 
 ```
@@ -520,6 +546,7 @@ Watch the promo video on YouTube
 | StartIn | C:\\App\\ | Configure the working directory for the program when it launches. |
 | Executable | C:\\App\\Start.exe | Shortcut target |
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
+| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
 
 &nbsp;
 
