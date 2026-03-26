@@ -112,15 +112,15 @@ Watch the promo video on YouTube
   - Small bug fix to prevent authentication pop-ups in non-managed user contexts.
 
  - 1.3.005: Bug fix
-  - Fixed an issue where File Actions could be triggered even when a user was not part of a group
+    - Fixed an issue where File Actions could be triggered even when a user was not part of a group
 
  - 1.3.006: Bug fix
-  - Fixed an issue where desktop and start-menu shortcuts did not include the configured Icon file.
+    - Fixed an issue where desktop and start-menu shortcuts did not include the configured Icon file.
 
  - 1.3.007: New features! (Release early April)
-  - Start-Menu Shortcuts now support IconIndex values
-  - Desktop Shortcuts now support IconIndex values
-  - All configurations now support group nesting! When **"IncludeNested": "true"** is set, every underlying membership will be included.
+    - Start-Menu Shortcuts now support IconIndex values
+    - Desktop Shortcuts now support IconIndex values
+    - All configurations now support group nesting! When **"IncludeNested": "true"** is set, every underlying membership will be included.
   
 &nbsp;
 
