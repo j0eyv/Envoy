@@ -480,6 +480,7 @@ Watch the promo video on YouTube
         "shortcutFolder": "Utilities",
         "action": "Add",
         "iconPath": "c:\\App1\\logo.ico",
+        "IconIndex": "0",
         "Group": "",
         "IncludeNested": ""        
       } 
@@ -497,6 +498,7 @@ Watch the promo video on YouTube
 | Executable | C:\\App\\Start.exe | Shortcut target |
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
+| IconIndex | 0,1,2,3,4 | IconIndex in Windows shortcuts is the number that tells Windows which icon to use from a file (like a .dll or .exe) that contains multiple icons. |
 
 &nbsp;
 
@@ -520,6 +522,7 @@ Watch the promo video on YouTube
         "arguments": "",
         "action": "remove",
         "iconPath": "c:\\application\\logo.ico",
+        "IconIndex": "0",
         "StartIn": "c:\\application\\,
         "Group": "",
         "IncludeNested": ""
@@ -530,6 +533,7 @@ Watch the promo video on YouTube
         "arguments": "-x \"\\\\server\\share\connect.rdp"",
         "action": "add",
         "iconPath": "c:\\application\\logo.ico",
+        "IconIndex": "0",
         "StartIn": "C:\\Windows\\System32\\,
         "Group": "",
         "IncludeNested": ""
@@ -547,6 +551,7 @@ Watch the promo video on YouTube
 | Executable | C:\\App\\Start.exe | Shortcut target |
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
+| IconIndex | 0,1,2,3,4 | IconIndex in Windows shortcuts is the number that tells Windows which icon to use from a file (like a .dll or .exe) that contains multiple icons. |
 
 &nbsp;
 
