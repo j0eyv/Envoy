@@ -66,8 +66,6 @@ Watch the promo video on YouTube
 &nbsp;
 
 # 🔜 Roadmap
-- Support for nested groups in Entra ID
-- IconIndex for Desktop and Start-Menu shortcuts
 
   **Long term:**
 - Investigating for a more robust and centralized logging method/dashboard
