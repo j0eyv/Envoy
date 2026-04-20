@@ -121,14 +121,12 @@ Watch the promo video on YouTube
     - All configurations now support group nesting! When **"IncludeNested": "true"** is set, every underlying membership will be included.
 
   - 1.3.008: Improvements
-    - Nested Entra ID groups now support more than 100 groups, exceeding the default limit.
+    - Entra ID groups now support more than 100 groups, exceeding the default limit.
        
 &nbsp;
 
 # 🛑 Known issues
 - Microsoft Graph PowerShell modules (version 2.34 and 2.35) may cause Graph connection issues, resulting in the following error: _WARNING: Note: Sign in by Web Account Manager (WAM) is enabled by default on Windows. If using an embedded terminal, the interactive browser window may be hidden behind other windows._ To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.35.1 is recommended, as this release includes the DisableLoginByWAM fix implemented in Envoy.
-
-- Some Defender Smartscreen definition versions might block the Envoy.MSI downloads. They mark the filw as being malicious (which is not). We're currently working with Microsoft to prevent this from happening.
 
 &nbsp;
 
