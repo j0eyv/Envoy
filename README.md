@@ -115,11 +115,14 @@ Watch the promo video on YouTube
  - 1.3.006: Bug fix
     - Fixed an issue where desktop and start-menu shortcuts did not include the configured Icon file.
 
- - 1.3.007: New features! (Release early April)
+ - 1.3.007: New features!
     - Start-Menu Shortcuts now support IconIndex values
     - Desktop Shortcuts now support IconIndex values
     - All configurations now support group nesting! When **"IncludeNested": "true"** is set, every underlying membership will be included.
-  
+
+  - 1.3.008: Improvements
+    - Nested Entra ID groups now support more than 100 groups, exceeding the default limit.
+       
 &nbsp;
 
 # 🛑 Known issues
