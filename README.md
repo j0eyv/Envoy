@@ -33,6 +33,7 @@ Watch the promo video on YouTube
     - [📰 Write-Log](#-write-log)
     - [📰 Write-AdminLog](#-write-adminlog)
     - [🔑 Tenant Configuration](#-tenant-configuration)
+    - [� Delayed start](#-delayed-start)
     - [📁 Deploy-DriveMappings](#-deploy-drivemappings)
     - [📘 Deploy-RegistryKeys](#-deploy-registrykeys)
     - [⏳ Deploy-Executables](#-deploy-executables)
@@ -122,6 +123,11 @@ Watch the promo video on YouTube
 
   - 1.3.008: Improvements
     - Entra ID groups now support more than 100 groups, exceeding the default limit.
+
+  - 1.3.009: Improvements
+    - Implemented a optional delayed start for environments experiencing timing problems during the logon process. The Config.JSON file can now be used to delay the execution for a configurable amount of seconds (integer).
+    - Enhancements have been made to the Drive Mapping feature. Certain Windows environments might have experienced problems with the friendly name or label for drive mappings. This issue has now been resolved by implementing extra automated configurations.
+    - Improvements have been implemented in the Drive Mapping feature. The underlying new-psdrive cmdlet has a bug when working with persistent DFS paths. Envoy now manages this issue by applying a workaround. The Config.JSON file can now include the IsDFSPath (boolean) setting to enable the workaround.
        
 &nbsp;
 
@@ -153,8 +159,6 @@ Watch the promo video on YouTube
 **Key Features:** Used for TenantId and ApplicationId parameters.
 
 
-
-
 ```
 "Tenant": [
       {
@@ -169,6 +173,27 @@ Watch the promo video on YouTube
 |------------------|-----|-----------------------|
 | TenantId      | ******** | Configure the desired TenantId guid.                   |
 | AppId           | ******** | Configure the AppId. This is the AppRegistration which handles the authentication |
+
+
+&nbsp;
+
+### 🕙 Delayed start
+
+**Purpose**: Being used to delayed the start for environments experiencing timing problems during the logon process. This is an optional setting.
+
+```
+    "DelayedStart": [
+      {
+        "Seconds": "15"
+      }
+    ],  
+```
+
+**Usage:**
+| Setting           | Values      | Description  |
+|------------------|-----|-----------------------|
+| Seconds      | integer | Configure the delayed start in seconds. E.g. 5/10/15/20/25/30.  |
+
 
 &nbsp;
 
@@ -195,7 +220,8 @@ Watch the promo video on YouTube
         "Description": "Test Drive",
         "Priority": 1,
         "Action": "add",
-        "IncludeNested": "true"
+        "IncludeNested": "true",
+        "IsDFSPath": "false"
       },
       {
         "DriveLetter": "Y",
@@ -204,7 +230,8 @@ Watch the promo video on YouTube
         "Description": "Test Drive 2",
         "Priority": 1,
         "Action": "add",
-        "IncludeNested": "true"
+        "IncludeNested": "true",
+        "IsDFSPath": "false"
       },
       {
         "DriveLetter": "H",
@@ -213,7 +240,8 @@ Watch the promo video on YouTube
         "Description": "Home",
         "Priority": 1,
         "Action": "add",
-        "IncludeNested": ""
+        "IncludeNested": "",
+        "IsDFSPath": "false"
       },
       {
         "DriveLetter": "Z",
@@ -222,8 +250,19 @@ Watch the promo video on YouTube
         "Description": "Home",
         "Priority": 1,
         "Action": "add",
-        "IncludeNested": ""
-      }
+        "IncludeNested": "",
+        "IsDFSPath": "false"
+      },
+      {
+        "DriveLetter": "S",
+        "UNCPath": "\\\\domain.local\\DFSRoot\\Sales",
+        "Group": "GG - Sales Share",
+        "Description": "Sales Share",
+        "Priority": 1,
+        "Action": "add",
+        "IncludeNested": "Yes",
+        "IsDFSPath": "true"
+      },      
     ],
 ```
 
@@ -236,7 +275,8 @@ Watch the promo video on YouTube
 | Description | Text | Fill in a description. E.g. Sales Drive, Marketing Team. This is being used as friendlyname |
 | Priority | 1,2,3,4,5,6, etc | Conflicts with drive mappings can occur if a user is a member of multiple groups with the same drive letter as result. |Prio 1 is the lowest, higher wins. |
 | Action | Add or Remove | Define the action for the drive mapping |
-| IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
+| IncludeNested | True or Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
+| IsDFSPath | true / false / empty (boolean) | The underlying new-psdrive cmdlet has a bug when working with persistent DFS paths. Envoy now manages this issue by applying a workaround by setting HKCU\Network\X\ConnectionType = 1 |
 
 &nbsp;
 
