@@ -70,7 +70,8 @@ Watch the promo video on YouTube
 
   **Long term:**
 - Investigating for a more robust and centralized logging method/dashboard
-- Multiple Entra Groups per item/block  
+- Multiple Entra Groups per item/block
+- Dependency/wait method for desktop items. Envoy may process faster than OneDrive KFM, which could result in duplicate desktop items.
   
   &nbsp;
 
