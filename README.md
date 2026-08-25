@@ -128,11 +128,17 @@ Watch the promo video on YouTube
     - Implemented a optional delayed start for environments experiencing timing problems during the logon process. The Config.JSON file can now be used to delay the execution for a configurable amount of seconds (integer).
     - Enhancements have been made to the Drive Mapping feature. Certain Windows environments might have experienced problems with the friendly name or label for drive mappings. This issue has now been resolved by implementing extra automated configurations.
     - Improvements have been implemented in the Drive Mapping feature. The underlying new-psdrive cmdlet has a bug when working with persistent DFS paths. Envoy now manages this issue by applying a workaround. The Config.JSON file can now include the IsDFSPath (boolean) setting to enable the workaround.
-       
+
+  - 1.3.011: Improvements
+    - Improved error handling for authentication issues.
+    - Automatically create non-existing folders while using file actions (copy/move)
+    - Improved Graph authentication. Silent authentication by using the LoginHint (requires Graph PowerShell 2.39.0.).
+   
+   	   
 &nbsp;
 
 # 🛑 Known issues
-- Microsoft Graph PowerShell modules (version 2.34 and 2.35) may cause Graph connection issues, resulting in the following error: _WARNING: Note: Sign in by Web Account Manager (WAM) is enabled by default on Windows. If using an embedded terminal, the interactive browser window may be hidden behind other windows._ To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.35.1 is recommended, as this release includes the DisableLoginByWAM fix implemented in Envoy.
+- Microsoft Graph PowerShell modules (between version 2.34.x and 2.38.x) may cause Graph authentication issues. To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.39.0 and Envoy 1.3.11 is recommended, as this release includes fixes.
 
 &nbsp;
 
