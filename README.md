@@ -33,7 +33,7 @@ Watch the promo video on YouTube
     - [📰 Write-Log](#-write-log)
     - [📰 Write-AdminLog](#-write-adminlog)
     - [🔑 Tenant Configuration](#-tenant-configuration)
-    - [� Delayed start](#-delayed-start)
+    - [🕙 Delayed start](#-delayed-start)
     - [📁 Deploy-DriveMappings](#-deploy-drivemappings)
     - [📘 Deploy-RegistryKeys](#-deploy-registrykeys)
     - [⏳ Deploy-Executables](#-deploy-executables)
@@ -135,7 +135,9 @@ Watch the promo video on YouTube
     - Automatically create non-existing folders while using file actions (copy/move)
     - Improved Graph authentication. Silent authentication by using the LoginHint (requires Graph PowerShell 2.39.0.).
    
-   	   
+ - 1.3.013: Improvements
+    - Small change to default printer handling. This feature previously included deprecated cmdlets that have now been replaced. No adjustments are required from an admin or user perspective. Functionality and behaviour remain unchanged.
+
 &nbsp;
 
 # 🛑 Known issues
