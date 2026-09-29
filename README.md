@@ -34,6 +34,7 @@ Watch the promo video on YouTube
     - [📰 Write-AdminLog](#-write-adminlog)
     - [🔑 Tenant Configuration](#-tenant-configuration)
     - [🕙 Delayed start](#-delayed-start)
+    - [⚙️ Optional Per-Item Conditions](#️-optional-per-item-conditions)
     - [📁 Deploy-DriveMappings](#-deploy-drivemappings)
     - [📘 Deploy-RegistryKeys](#-deploy-registrykeys)
     - [⏳ Deploy-Executables](#-deploy-executables)
@@ -63,6 +64,7 @@ Watch the promo video on YouTube
 - **Microsoft Graph Authentication**: The script uses the `Microsoft.Graph` modules to interact with Microsoft Graph APIs.
 - **Configuration File**: Reads settings from `Config.json` located at `C:\ProgramData\Envoy\Config.json`.
 - **Authentication**: Connects to Microsoft Graph using an App Registration.
+- **Optional Conditions**: Allows individual configured items to run only when process, registry, or file conditions are met.
 
 &nbsp;
 
@@ -71,7 +73,7 @@ Watch the promo video on YouTube
   **Long term:**
 - Investigating for a more robust and centralized logging method/dashboard
 - Multiple Entra Groups per item/block
-- Dependency/wait method for desktop items. Envoy may process faster than OneDrive KFM, which could result in duplicate desktop items.
+- Additional wait/retry options for optional item conditions.
   
   &nbsp;
 
@@ -137,6 +139,9 @@ Watch the promo video on YouTube
    
  - 1.3.013: Improvements
     - Small change to default printer handling. This feature previously included deprecated cmdlets that have now been replaced. No adjustments are required from an admin or user perspective. Functionality and behaviour remain unchanged.
+
+ - 1.3.014: New feature
+   - Added optional per-item conditions. Configured items can now be skipped or executed based on process, registry, or file checks.
 
 &nbsp;
 
@@ -206,6 +211,71 @@ Watch the promo video on YouTube
 
 &nbsp;
 
+### ⚙️ Optional Per-Item Conditions
+
+**Purpose**: Allows an individual configured item to execute only when one or more conditions are met. Conditions are optional and can be used on drive mappings, registry keys, executables, file actions, printers, Start Menu entries, and desktop shortcuts.
+
+**Execution order:**
+1. Envoy checks group membership first.
+2. If the user is targeted, Envoy evaluates the configured conditions.
+3. If the conditions pass, the item executes.
+4. If the conditions fail, Envoy follows `OnConditionFailed`.
+
+If `Conditions` is missing or empty, the item runs as it did in previous versions.
+
+**Example:**
+```
+"Conditions": [
+  {
+    "Type": "ProcessRunning",
+    "Name": "explorer"
+  },
+  {
+    "Type": "FileExists",
+    "Path": "C:\\ProgramData\\Envoy\\Core\\Envoy-logon.exe"
+  },
+  {
+    "Type": "RegistryValueContains",
+    "Path": "HKCU:\\Software\\Contoso\\App",
+    "Name": "InstallPath",
+    "Value": "Contoso"
+  }
+],
+"ConditionMode": "All",
+"OnConditionFailed": "Skip"
+```
+
+**Supported condition types:**
+| Type | Required settings | Description |
+|------|-------------------|-------------|
+| ProcessRunning | Name | Passes when the named process is running in the current user's context. `OneDrive` and `OneDrive.exe` are both supported. |
+| ProcessNotRunning | Name | Passes when the named process is not running in the current user's context.`OneDrive` and `OneDrive.exe` are both supported. |
+| RegistryExists | Path | Passes when the registry key exists. |
+| RegistryNotExists | Path | Passes when the registry key does not exist. |
+| RegistryValueExists | Path, Name | Passes when the named registry value exists under the configured key. |
+| RegistryValueNotExists | Path, Name | Passes when the named registry value does not exist under the configured key. |
+| RegistryValueEquals | Path, Name, Value | Passes when the named registry value exists and equals the configured value. Values are compared as strings. |
+| RegistryValueNotEquals | Path, Name, Value | Passes when the named registry value exists and does not equal the configured value. |
+| RegistryValueContains | Path, Name, Value | Passes when the named registry value contains the configured text. Matching is a case-insensitive literal substring search. |
+| RegistryValueNotContains | Path, Name, Value | Passes when the named registry value exists and does not contain the configured text. Matching is a case-insensitive literal substring search. |
+| FileExists | Path | Passes when the configured file exists. |
+| FileNotExists | Path | Passes when the configured file does not exist. |
+
+**Condition settings:**
+| Setting | Values | Description |
+|---------|--------|-------------|
+| Conditions | Array | Optional list of condition objects for the item. |
+| ConditionMode | All or Any | Optional. `All` means every condition must pass. `Any` means at least one condition must pass. Defaults to `All`. |
+| OnConditionFailed | Skip or RunAnyway | Optional. `Skip` skips the current item and continues with the next item. `RunAnyway` logs the condition failure but still executes the current item. Defaults to `Skip`. |
+
+**Notes:**
+- File paths and registry paths support Windows environment variables such as `%LOCALAPPDATA%` and `%USERPROFILE%`.
+- Process conditions are evaluated for the current logged-on user context.
+- `RegistryExists` and `RegistryNotExists` check for a registry key. Use the registry value conditions to check a specific value; the `NotEquals` and `NotContains` checks require that value to exist.
+
+
+&nbsp;
+
 ### 📁 Deploy-DriveMappings
 
 **Purpose**: Maps or removes network drives based on configuration.
@@ -230,7 +300,21 @@ Watch the promo video on YouTube
         "Priority": 1,
         "Action": "add",
         "IncludeNested": "true",
-        "IsDFSPath": "false"
+        "IsDFSPath": "false",
+        "Conditions": [
+          {
+            "Type": "ProcessRunning",
+            "Name": "explorer"
+          },
+          {
+            "Type": "RegistryValueContains",
+            "Path": "HKCU:\\Software\\Contoso\\App",
+            "Name": "InstallPath",
+            "Value": "Contoso"
+          }
+        ],
+        "ConditionMode": "Any",
+        "OnConditionFailed": "Skip"
       },
       {
         "DriveLetter": "Y",
@@ -269,7 +353,7 @@ Watch the promo video on YouTube
         "Description": "Sales Share",
         "Priority": 1,
         "Action": "add",
-        "IncludeNested": "Yes",
+        "IncludeNested": "true",
         "IsDFSPath": "true"
       },      
     ],
@@ -286,6 +370,9 @@ Watch the promo video on YouTube
 | Action | Add or Remove | Define the action for the drive mapping |
 | IncludeNested | True or Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
 | IsDFSPath | true / false / empty (boolean) | The underlying new-psdrive cmdlet has a bug when working with persistent DFS paths. Envoy now manages this issue by applying a workaround by setting HKCU\Network\X\ConnectionType = 1 |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -312,7 +399,15 @@ Watch the promo video on YouTube
         "ValueData": 1,
         "Group": "GG - Registry - TestKey",
         "Action": "add",
-        "IncludeNested": ""
+        "IncludeNested": "",
+        "Conditions": [
+          {
+            "Type": "RegistryExists",
+            "Path": "HKCU:\\Software"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "Skip"
       },
       {
         "Key": "HKCU:\\Software\\TestKey",
@@ -337,6 +432,24 @@ Watch the promo video on YouTube
         "ValueData": "0A,0B,0C,0D,0E,0F",
         "Group": "",
         "Action": "add"
+      },
+      {
+        "Key": "HKCU:\\Software\\Contoso\\App",
+        "ValueName": "ManagedBy",
+        "ValueType": "STRING",
+        "ValueData": "Envoy",
+        "Group": "",
+        "Action": "add",
+        "Conditions": [
+          {
+            "Type": "RegistryValueContains",
+            "Path": "HKCU:\\Software\\Contoso\\App",
+            "Name": "InstallPath",
+            "Value": "Contoso"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "Skip"
       }
     ],
 ```
@@ -351,6 +464,9 @@ Watch the promo video on YouTube
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will receive this registry setting. Leave the group empty for "everyone". |
 | Action | Add or Remove | Define the action for the registry key |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -372,12 +488,34 @@ Watch the promo video on YouTube
         "FilePath": "C:\\ProgramFiles\\CustomApp\\Setup.msi",
         "Arguments": "/qn",
         "Group": "GG - Custom App",
-        "IncludeNested": ""
+        "IncludeNested": "",
+        "Conditions": [
+          {
+            "Type": "FileNotExists",
+            "Path": "C:\\ProgramData\\CustomApp\\installed.flag"
+          },
+          {
+            "Type": "RegistryValueContains",
+            "Path": "HKCU:\\Software\\Contoso\\App",
+            "Name": "InstallPath",
+            "Value": "Contoso"
+          }
+        ],
+        "ConditionMode": "Any",
+        "OnConditionFailed": "Skip"
       },
       {
         "FilePath": "C:\\Windows\\System32\\calc.exe",
         "Arguments": "",
-        "Group": "GG - Calculator"
+        "Group": "GG - Calculator",
+        "Conditions": [
+          {
+            "Type": "ProcessNotRunning",
+            "Name": "calc"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "RunAnyway"
       }
     ],
 ```
@@ -391,6 +529,9 @@ Watch the promo video on YouTube
 | Arguments | /qn, /silent, etc | Supports arguments belonging to the application |
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will automatically launch the configured application. Leave the group empty for "everyone". |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -419,7 +560,15 @@ Watch the promo video on YouTube
         "DestinationPath": "C:\\Temp\\Destination\\File.txt",
         "NewName": "NewFileName.txt",
         "Group": "GG - FileAction - Copy",
-        "IncludeNested": "true"
+        "IncludeNested": "true",
+        "Conditions": [
+          {
+            "Type": "FileExists",
+            "Path": "C:\\Temp\\Source\\File.txt"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "Skip"
       },
       {
         "FileActionType": "copy",
@@ -465,6 +614,9 @@ Watch the promo video on YouTube
 | NewName | FileName | Set the desired new file name. Being used for actions: rename |
 | Group | e.g. "GG - Sales Team" | Configure the desired Entra ID group name or Object ID. Users in this group will automatically execute the file actions. Leave the group empty for "everyone". |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -487,7 +639,21 @@ Watch the promo video on YouTube
         "Group": "GG - Printers - FollowMe",
         "Action": "add",
         "DefaultPrinter": "True",
-        "IncludeNested": ""
+        "IncludeNested": "",
+        "Conditions": [
+          {
+            "Type": "ProcessRunning",
+            "Name": "explorer"
+          },
+          {
+            "Type": "RegistryValueContains",
+            "Path": "HKCU:\\Software\\Contoso\\App",
+            "Name": "InstallPath",
+            "Value": "Contoso"
+          }
+        ],
+        "ConditionMode": "Any",
+        "OnConditionFailed": "Skip"
       },
       {
         "PrinterPath": "\\\\PRINTSRV.domain.local\\PRT01",
@@ -504,6 +670,9 @@ Watch the promo video on YouTube
 | Action | Add or Remove | Define if the printer queue should be added or removed |
 | DefaultPrinter | True | Sets the specified printer queue as the default printer in Windows. If this value is empty or set to False, no action is taken. If multiple printer queues are marked as default in the configuration, the last one listed will be applied as the default printer. |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -523,16 +692,24 @@ Watch the promo video on YouTube
 ```
     "StartMenuEntry": [
       {
-        "shortcutName": "Notepad++",
-        "executable": "C:\\App1\Launch.exe",
-        "arguments": "-file \"C:\\App1\\Config.json\"",
-        "StartIn": "C:\\App1\"
-        "shortcutFolder": "Utilities",
-        "action": "Add",
-        "iconPath": "c:\\App1\\logo.ico",
+        "ShortcutName": "Notepad++",
+        "Executable": "C:\\App1\\Launch.exe",
+        "Arguments": "-file \"C:\\App1\\Config.json\"",
+        "StartIn": "C:\\App1\\",
+        "ShortcutFolder": "Utilities",
+        "Action": "add",
+        "IconPath": "C:\\App1\\logo.ico",
         "IconIndex": "0",
         "Group": "",
-        "IncludeNested": ""        
+        "IncludeNested": "",
+        "Conditions": [
+          {
+            "Type": "FileExists",
+            "Path": "C:\\App1\\Launch.exe"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "Skip"        
       } 
     ] 
 ```
@@ -549,6 +726,9 @@ Watch the promo video on YouTube
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
 | IconIndex | 0,1,2,3,4 | IconIndex in Windows shortcuts is the number that tells Windows which icon to use from a file (like a .dll or .exe) that contains multiple icons. |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -565,26 +745,34 @@ Watch the promo video on YouTube
 &nbsp;
 **Example:**
 ```
-    "StartMenuEntry": [
+    "DesktopShortcuts": [
       {
-        "shortcutName": "Command Prompt",
-        "executable": "C:\\Windows\\System32\\cmd.exe",
-        "arguments": "",
-        "action": "remove",
-        "iconPath": "c:\\application\\logo.ico",
+        "ShortcutName": "Command Prompt",
+        "Executable": "C:\\Windows\\System32\\cmd.exe",
+        "Arguments": "",
+        "Action": "remove",
+        "IconPath": "C:\\application\\logo.ico",
         "IconIndex": "0",
-        "StartIn": "c:\\application\\,
+        "StartIn": "C:\\application\\",
         "Group": "",
-        "IncludeNested": ""
+        "IncludeNested": "",
+        "Conditions": [
+          {
+            "Type": "FileNotExists",
+            "Path": "%USERPROFILE%\\Desktop\\Command Prompt.lnk"
+          }
+        ],
+        "ConditionMode": "All",
+        "OnConditionFailed": "Skip"
       },
       {
-        "shortcutName": "Remote Assistance",
-        "executable": "C:\\Windows\\System32\\msra.exe",
-        "arguments": "-x \"\\\\server\\share\connect.rdp"",
-        "action": "add",
-        "iconPath": "c:\\application\\logo.ico",
+        "ShortcutName": "Remote Assistance",
+        "Executable": "C:\\Windows\\System32\\msra.exe",
+        "Arguments": "-x \"\\\\server\\share\\connect.rdp\"",
+        "Action": "add",
+        "IconPath": "C:\\application\\logo.ico",
         "IconIndex": "0",
-        "StartIn": "C:\\Windows\\System32\\,
+        "StartIn": "C:\\Windows\\System32\\",
         "Group": "",
         "IncludeNested": ""
       }       
@@ -602,6 +790,9 @@ Watch the promo video on YouTube
 | Arguments | -file \"C:\\App1\\Config.json\" |	Optional command-line arguments passed to the executable |
 | IncludeNested | True of Empty | If set to True, group nesting will be applied. If left empty it will be ignored. |
 | IconIndex | 0,1,2,3,4 | IconIndex in Windows shortcuts is the number that tells Windows which icon to use from a file (like a .dll or .exe) that contains multiple icons. |
+| Conditions | Array | Optional per-item conditions. See [Optional Per-Item Conditions](#️-optional-per-item-conditions). |
+| ConditionMode | All or Any | Optional condition evaluation mode. Defaults to All. |
+| OnConditionFailed | Skip or RunAnyway | Optional action when conditions fail. Defaults to Skip. |
 
 &nbsp;
 
@@ -611,12 +802,14 @@ The script executes the following tasks sequentially while logging on. The sched
 
 1. **Drive Mapping**: Execute `Deploy-DriveMappings` to manage network drives.
 2. **Registry Key Management**: Execute `Deploy-RegistryKeys` to manage registry keys.
-3. **Process execution**: Execute `Deploy-ProcessExecution` to manage process executions.
+3. **Executable execution**: Execute `Deploy-Executables` to manage executable launches.
 4. **File Actions**: Execute `Deploy-FileActions` to manage file actions.
-5. **Printer mapping**: Execute `Deploy-PrinterMappings` to manage printer mappings.
+5. **Printer mapping**: Execute `Deploy-Printers` to manage printer mappings.
 6. **Start-Menu shortcut**: Execute `Deploy-StartMenuEntry` to add shortcuts.
 7. **Desktop shortcut**: Execute `Deploy-DesktopShortcut` to add shortcuts.
 8. **All functions**: Execute `Invoke-UEMDeployment` to manage all functions at once.
+
+For every configured item, Envoy evaluates group membership before optional conditions. Conditions only apply to the current item and do not change the overall execution order.
 
 &nbsp;
 
