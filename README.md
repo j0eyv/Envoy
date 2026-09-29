@@ -140,7 +140,7 @@ Watch the promo video on YouTube
  - 1.3.013: Improvements
     - Small change to default printer handling. This feature previously included deprecated cmdlets that have now been replaced. No adjustments are required from an admin or user perspective. Functionality and behaviour remain unchanged.
 
- - 1.3.014: New feature
+ - 1.3.016: Condition functionality
    - Added optional per-item conditions. Configured items can now be skipped or executed based on process, registry, or file checks.
 
 &nbsp;
