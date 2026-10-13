@@ -34,6 +34,7 @@ Watch the promo video on YouTube
     - [📰 Write-AdminLog](#-write-adminlog)
     - [🔑 Tenant Configuration](#-tenant-configuration)
     - [🕙 Delayed start](#-delayed-start)
+    - [📶 Global Connection Dependency](#-global-connection-dependency)
     - [⚙️ Optional Per-Item Conditions](#️-optional-per-item-conditions)
     - [📁 Deploy-DriveMappings](#-deploy-drivemappings)
     - [📘 Deploy-RegistryKeys](#-deploy-registrykeys)
@@ -143,6 +144,9 @@ Watch the promo video on YouTube
  - 1.3.016: Condition functionality
    - Added optional per-item conditions. Configured items can now be skipped or executed based on process, registry, or file checks.
 
+ - 1.3.017: Connection dependency
+   - Added optional connectivity gate for all Envoy actions, including drive and printer mappings. Useful for endpoints that require VPN or datacenter connectivity.
+
 &nbsp;
 
 # 🛑 Known issues
@@ -208,6 +212,43 @@ Watch the promo video on YouTube
 |------------------|-----|-----------------------|
 | Seconds      | integer | Configure the delayed start in seconds. E.g. 5/10/15/20/25/30.  |
 
+
+&nbsp;
+
+### 📶 Global Connection Dependency
+
+**Purpose**: Checks connectivity to a configured host before executing any Envoy configurations. Unlike per-item conditions, this optional check gates the entire deployment through `Test-EnvoyConnectionDependency`, immediately before `Invoke-UEMDeployment`. Microsoft Graph authentication runs before this check. Useful for endpoints that require VPN or datacenter connectivity to execute configured actions, such as printer and drive mappings.
+
+Add `ConnectionDependency` under `Configuration` in `Config.json`:
+
+```
+{
+  "Configuration": {
+    "ConnectionDependency": [
+      {
+        "Probe": "10.0.0.4",
+        "CheckInterval": "10",
+        "FailureThreshold": "3",
+        "FailureAction": "Continue"
+      }
+    ]
+  }
+}
+```
+
+**Usage:**
+| Setting | Values | Description |
+|---------|--------|-------------|
+| Probe | IP address or DNS name | Host to check using `Test-Connection -ComputerName`, for example `10.0.0.4` or `server.contoso.com`. |
+| CheckInterval | Integer >= 0 | Time in seconds between failed checks. `10` waits 10 seconds before the next attempt; `0` retries immediately. |
+| FailureThreshold | Integer >= 1 | Total number of checks, including the first attempt. `3` permits at most three checks, not three additional retries. |
+| FailureAction | Continue or Stop | Action when all checks fail. `Continue` runs `Invoke-UEMDeployment` despite the failed connection; `Stop` exits without executing any Envoy configurations. Values are case-insensitive. |
+
+The first check runs immediately. Each attempt sends one ICMP ping; a successful check ends retries and allows deployment to proceed. Envoy waits only between failed attempts, never after the final attempt. With the example above, three failed checks include two 10-second waits, plus the time taken by the checks themselves.
+
+Every successful or failed check, retry wait, and final failure action is logged using `Write-Log` to `C:\ProgramData\Envoy\Logging\<username>\User.log`. If `ConnectionDependency` is missing or empty, deployment proceeds without a connectivity check. Invalid dependency settings or an unreadable configuration stop deployment.
+
+**Note:** The target must allow ICMP ping. A failed ping does not necessarily mean the network or a particular service is unavailable.
 
 &nbsp;
 
