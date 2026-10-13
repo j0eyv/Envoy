@@ -74,7 +74,6 @@ Watch the promo video on YouTube
   **Long term:**
 - Investigating for a more robust and centralized logging method/dashboard
 - Multiple Entra Groups per item/block
-- Additional wait/retry options for optional item conditions.
   
   &nbsp;
 
