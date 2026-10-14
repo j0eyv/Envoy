@@ -149,7 +149,7 @@ Watch the promo video on YouTube
 &nbsp;
 
 # 🛑 Known issues
-- Microsoft Graph PowerShell modules (between version 2.34.x and 2.38.x) may cause Graph authentication issues. To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.39.0 and Envoy 1.3.11 is recommended, as this release includes fixes.
+- Microsoft Graph PowerShell modules (between version 2.34.x and 2.38.x) may cause Graph authentication issues. To maintain stability within the Envoy environment, upgrading the PowerShell modules to version 2.39.0 and at least Envoy 1.3.11 is recommended, as this release includes fixes. **Recommended fix:** Upgrade Envoy and Microsoft Graph PowerShell modules to the latest versions.
 
 &nbsp;
 
